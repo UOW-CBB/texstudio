@@ -11,8 +11,11 @@ print_headline "Getting dependencies for building for ${QT} on ${TRAVIS_OS_NAME}
 
 if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
 	if [ $QT = "qt5win" ]; then
-		MXEDIR="/opt/mxe"
-		MXETARGET="i686-w64-mingw32.static"
+		MXEDIR="/usr/lib/mxe"
+		MXETARGET="x86_64-w64-mingw32.static"
+		
+		print_info "Make MXE directory writable"
+        echo_and_run "sudo chmod -R a+w ${MXEDIR}"
 
 		echo "MXEDIR=\"${MXEDIR}\"" >> travis-ci/defs.sh
 		echo "MXETARGET=\"${MXETARGET}\"" >> travis-ci/defs.sh
@@ -23,11 +26,6 @@ if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
 		CXX="${MXETARGET}-g++"
 
 		JOBS=$(grep '^processor' /proc/cpuinfo | wc -l)
-
-		print_info "Fetching MXE from docker"
-		#echo_and_run "docker create --name mxe stloeffler/mxe-tw"
-		echo_and_run "docker create --name mxe jsundermeyer/txs_support:v01"
-		echo_and_run "docker cp mxe:${MXEDIR} ${MXEDIR}"
 
 		cd travis-ci/mxe
 
